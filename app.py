@@ -360,10 +360,6 @@ with col_cited:
 
 col_oa, col_doc = st.columns(2)
 
-# ==============================================================================
-# 🔓 ACCESO ABIERTO (DONA MEJORADA)
-# ==============================================================================
-
 with col_oa:
     with st.container(border=True):
 
@@ -383,41 +379,35 @@ with col_oa:
             oa,
             names="Tipo",
             values="Cantidad",
-            hole=0.6,
+            hole=0.65,
             template="plotly_dark",
             color_discrete_sequence=[
-                "#00D4FF",  # celeste neón
-                "#FF3D81",  # rosa fuerte
+                "#00D4FF",  # azul eléctrico
                 "#7C4DFF",  # morado
-                "#00E676"   # verde neón
+                "#00E676",  # verde neón
+                "#00B0FF"   # azul profundo
             ]
         )
 
         fig_oa.update_traces(
             textinfo="percent+label",
-            pull=[0.02] * len(oa)
+            pull=[0.03] * len(oa)
         )
 
         fig_oa.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            height=420,
-            margin=dict(t=20, b=20, l=10, r=10),
-            legend_title_text="Tipo de acceso"
+            height=380,
+            margin=dict(t=10, b=10, l=10, r=10),
+            showlegend=True
         )
 
         st.plotly_chart(fig_oa, use_container_width=True)
-
-
-# ==============================================================================
-# 📄 TIPOS DE DOCUMENTO (DONUT VIVO)
-# ==============================================================================
-
 with col_doc:
     with st.container(border=True):
 
         st.subheader("📄 Tipología de la Producción Científica")
-        st.caption("Tipos de documentos más frecuentes en la literatura.")
+        st.caption("Diversidad de tipos de documentos en la literatura científica.")
 
         doc = (
             df_filtered["Document Type"]
@@ -432,42 +422,40 @@ with col_doc:
         doc["Cantidad"] = pd.to_numeric(doc["Cantidad"], errors="coerce")
         doc = doc.dropna()
 
-        vibrant_colors = [
-            "#00D4FF",
-            "#FF3D81",
-            "#7C4DFF",
-            "#00E676",
-            "#FFEA00",
-            "#FF6D00",
-            "#D500F9",
-            "#00BFA5"
-        ]
-
         fig_doc = px.pie(
             doc,
             names="Tipo",
             values="Cantidad",
-            hole=0.6,
+            hole=0.55,
             template="plotly_dark",
-            color_discrete_sequence=vibrant_colors
+            color_discrete_sequence=[
+                "#FF3D00",  # rojo intenso
+                "#FF6D00",  # naranja
+                "#FFEA00",  # amarillo
+                "#FF1744",  # rojo rosado
+                "#D500F9",  # fucsia
+                "#651FFF",  # violeta
+                "#00E5FF",  # cyan
+                "#FF4081"   # rosa fuerte
+            ]
         )
 
         fig_doc.update_traces(
             textinfo="percent+label",
-            pull=[0.02] * len(doc)
+            pull=[0.04] * len(doc),
+            rotation=90
         )
 
         fig_doc.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            height=420,
-            margin=dict(t=20, b=20, l=10, r=10),
+            height=520,  # 🔥 MÁS GRANDE
+            margin=dict(t=10, b=10, l=10, r=10),
+            showlegend=True,
             legend_title_text="Tipo de documento"
         )
 
-        st.plotly_chart(fig_doc, use_container_width=True)
-
-
+        st.plotly_chart(fig_doc, use_container_width=True)    
 # ==============================================================================
 # 📂 REPOSITORIO + DESCARGA CSV (SIN ERRORES)
 # ==============================================================================
