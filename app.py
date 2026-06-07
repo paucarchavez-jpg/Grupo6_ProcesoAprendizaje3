@@ -382,9 +382,8 @@ with col_oa:
             hole=0.65,
             template="plotly_dark",
             color_discrete_sequence=[
-                "#00D4FF",  # azul eléctrico
+                "#00E676",  
                 "#7C4DFF",  # morado
-                "#00E676",  # verde neón
                 "#00B0FF"   # azul profundo
             ]
         )
@@ -397,7 +396,7 @@ with col_oa:
         fig_oa.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            height=380,
+            height=400,
             margin=dict(t=10, b=10, l=10, r=10),
             showlegend=True
         )
@@ -442,7 +441,7 @@ with col_doc:
         fig_doc.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            height=500,  # 🔥 MÁS GRANDE
+            height=450,  # 🔥 MÁS GRANDE
             margin=dict(t=10, b=10, l=10, r=10),
             showlegend=True,
             legend_title_text="Tipo de documento"
