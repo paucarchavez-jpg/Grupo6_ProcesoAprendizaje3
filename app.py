@@ -112,13 +112,16 @@ if selected_journals:
 # ==============================================================================
 # 4. CUERPO PRINCIPAL: DISEÑO BENTO GRID Y EMPATÍA
 # ==============================================================================
-st.title("Inteligencia Artificial en la Salud Materno-Infantil")
+st.title("Tendencias de Investigación sobre IA y Machine Learning en Salud Materna e Infantil")
 
-# Bloque de Empatía con el Usuario (Contexto y Guía)
 st.markdown("""
 <div class="user-guide">
-    <strong>Propósito del Dashboard:</strong> Este entorno interactivo responde a la pregunta de investigación sobre las aplicaciones del Machine Learning en la salud materna e infantil. 
-    Explore la evolución temporal, identifique los artículos más influyentes y descubra los enfoques metodológicos más frecuentes en la literatura extraída de Scopus.
+<strong>Pregunta de investigación:</strong>
+¿Cuáles son las principales tendencias y áreas de investigación sobre inteligencia artificial y aprendizaje automático en la salud materna e infantil según la literatura científica indexada en Scopus?
+<br><br>
+<strong>Descripción del dashboard:</strong>
+Este dashboard bibliométrico permite analizar la evolución de la investigación científica relacionada con la inteligencia artificial y el aprendizaje automático en el ámbito de la salud materna e infantil.
+A través de indicadores de producción científica, citaciones, acceso abierto y análisis temático, es posible identificar los enfoques más estudiados, los trabajos con mayor impacto académico y las tendencias emergentes presentes en la literatura indexada en Scopus.
 </div>
 """, unsafe_allow_html=True)
 
@@ -130,18 +133,18 @@ if df_filtered.empty:
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 with kpi1:
     with st.container(border=True):
-        st.markdown(f"<div class='kpi-title'>Total de Estudios</div><div class='kpi-value'>{len(df_filtered)}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='kpi-title'>Producción Científica</div><div class='kpi-value'>{len(df_filtered)}</div>", unsafe_allow_html=True)
 with kpi2:
     with st.container(border=True):
-        st.markdown(f"<div class='kpi-title'>Impacto Acumulado</div><div class='kpi-value'>{df_filtered['Cited by'].sum()}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='kpi-title'>Impacto Académico</div><div class='kpi-value'>{df_filtered['Cited by'].sum()}</div>", unsafe_allow_html=True)
 with kpi3:
     with st.container(border=True):
         avg_cit = df_filtered['Cited by'].mean()
-        st.markdown(f"<div class='kpi-title'>Promedio Citas</div><div class='kpi-value'>{avg_cit:.1f}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='kpi-title'>Promedio de Citaciones</div><div class='kpi-value'>{avg_cit:.1f}</div>", unsafe_allow_html=True)
 with kpi4:
     with st.container(border=True):
         oa_pct = (df_filtered['Access_Type'] == 'Open Access').sum() / len(df_filtered) * 100
-        st.markdown(f"<div class='kpi-title'>Tasa Open Access</div><div class='kpi-value kpi-highlight'>{oa_pct:.1f}%</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='kpi-title'>Acceso Abierto</div><div class='kpi-value kpi-highlight'>{oa_pct:.1f}%</div>", unsafe_allow_html=True)
 
 st.write("") # Espaciador
 
@@ -151,7 +154,7 @@ col_left, col_right = st.columns([6, 4])
 
 with col_left:
     with st.container(border=True):
-        st.subheader("📈 Evolución de la Producción Científica")
+        st.subheader("📈 Evolución de las Publicaciones Científicas")
         st.caption("Visualiza cómo ha crecido el interés en la aplicación de IA en este campo a lo largo de los años.")
         df_yearly = df_filtered.groupby('Year').size().reset_index(name='Documentos')
         fig_line = px.line(df_yearly, x='Year', y='Documentos', markers=True, template='plotly_dark', color_discrete_sequence=['#06b6d4'])
@@ -160,8 +163,8 @@ with col_left:
 
 with col_right:
     with st.container(border=True):
-        st.subheader("🔍 Enfoques Principales (Keywords)")
-        st.caption("Términos más recurrentes en los títulos, indicando las subáreas de mayor estudio.")
+        st.subheader("🔍 Principales Líneas de Investigación")
+        st.caption("Conceptos y temáticas más frecuentes en los artículos analizados.")
         
         all_titles = " ".join(df_filtered['Title'].str.lower().tolist())
         words = re.findall(r'\b[a-z]{4,}\b', all_titles)
@@ -180,8 +183,8 @@ col_bottom_left, col_bottom_right = st.columns([5, 5])
 
 with col_bottom_left:
     with st.container(border=True):
-        st.subheader("🏆 Literatura Fundamental")
-        st.caption("Los 10 artículos con mayor cantidad de citas (indicador de autoridad en la materia).")
+        st.subheader("🏆 Artículos con Mayor Impacto Científico")
+        st.caption("Publicaciones que han recibido más citaciones y han influido significativamente en el desarrollo del área.")
         df_top = df_filtered.nlargest(10, 'Cited by').copy()
         df_top['Título Corto'] = df_top['Title'].apply(lambda x: x[:50] + "..." if len(x) > 50 else x)
         
@@ -191,8 +194,8 @@ with col_bottom_left:
 
 with col_bottom_right:
     with st.container(border=True):
-        st.subheader("📂 Repositorio de Evidencia")
-        st.caption("Detalle de los documentos según los filtros aplicados. Puede exportar estos datos.")
+        st.subheader("📂 Publicaciones Analizadas")
+        st.caption("Listado de publicaciones científicas consideradas en el análisis bibliométrico.")
         display_cols = ['Authors', 'Title', 'Year', 'Source title', 'Cited by']
         st.dataframe(df_filtered[display_cols], use_container_width=True, height=330)
         
