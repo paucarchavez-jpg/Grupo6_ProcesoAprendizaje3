@@ -429,14 +429,7 @@ with col_doc:
             hole=0.55,
             template="plotly_dark",
             color_discrete_sequence=[
-                "#FF3D00",  # rojo intenso
-                "#FF6D00",  # naranja
-                "#FFEA00",  # amarillo
-                "#FF1744",  # rojo rosado
-                "#D500F9",  # fucsia
-                "#651FFF",  # violeta
-                "#00E5FF",  # cyan
-                "#FF4081"   # rosa fuerte
+                "#00D4FF", "#FF3D81", "#7C4DFF", "#00E676", "#FFEA00", "#FF6D00", "#D500F9", "#00BFA5"
             ]
         )
 
@@ -449,7 +442,7 @@ with col_doc:
         fig_doc.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            height=520,  # 🔥 MÁS GRANDE
+            height=500,  # 🔥 MÁS GRANDE
             margin=dict(t=10, b=10, l=10, r=10),
             showlegend=True,
             legend_title_text="Tipo de documento"
