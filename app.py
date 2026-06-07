@@ -117,11 +117,11 @@ st.title("Tendencias de Investigación sobre IA y Machine Learning en Salud Mate
 st.markdown("""
 <div class="user-guide">
 <strong>Pregunta de investigación:</strong>
-¿Cuáles son las principales tendencias y áreas de investigación sobre inteligencia artificial y aprendizaje automático en la salud materna e infantil según la literatura científica indexada en Scopus?
+¿Cuáles son las principales tendencias y áreas de investigación sobre inteligencia artificial y aprendizaje automático en la salud materna e infantil?
 <br><br>
 <strong>Descripción del dashboard:</strong>
 Este dashboard bibliométrico permite analizar la evolución de la investigación científica relacionada con la inteligencia artificial y el aprendizaje automático en el ámbito de la salud materna e infantil.
-A través de indicadores de producción científica, citaciones, acceso abierto y análisis temático, es posible identificar los enfoques más estudiados, los trabajos con mayor impacto académico y las tendencias emergentes presentes en la literatura indexada en Scopus.
+A través de indicadores de producción científica, citaciones, acceso abierto y análisis temático, es posible identificar los enfoques más estudiados, los trabajos con mayor impacto académico y las tendencias emergentes.
 </div>
 """, unsafe_allow_html=True)
 
@@ -362,77 +362,79 @@ with col_cited:
 
         st.plotly_chart(fig_bar, use_container_width=True)
 
-
-# ==============================================================================
-# FILA 4: ACCESO ABIERTO Y TIPOS DE DOCUMENTO
+c# ==============================================================================
+# FILA 4: ACCESO ABIERTO Y TIPOS DE DOCUMENTO (OPTIMIZADO)
 # ==============================================================================
 
 col_oa, col_doc = st.columns(2)
+
+# ------------------------------------------------------------------------------
+# 🔓 ACCESO ABIERTO
+# ------------------------------------------------------------------------------
 
 with col_oa:
     with st.container(border=True):
 
         st.subheader("🔓 Disponibilidad del Conocimiento")
-
-        st.caption(
-            "Distribución de publicaciones según acceso abierto."
-        )
+        st.caption("Distribución de publicaciones según acceso abierto.")
 
         oa = (
             df_filtered["Access_Type"]
+            .fillna("Desconocido")
             .value_counts()
             .reset_index()
         )
 
-        oa.columns = [
-            "Tipo",
-            "Cantidad"
-        ]
+        oa.columns = ["Tipo", "Cantidad"]
 
         fig_oa = px.pie(
             oa,
             names="Tipo",
             values="Cantidad",
-            hole=0.60,
+            hole=0.6,
             template="plotly_dark",
-            color_discrete_sequence=[
-                "#8ea19b",
-                "#d1ab71"
-            ]
+            color_discrete_sequence=["#8ea19b", "#d1ab71", "#5b8c85", "#c9c9c9"]
         )
 
         fig_oa.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
-            height=430
+            height=420,
+            margin=dict(t=20, b=20, l=10, r=10),
+            legend_title_text="Tipo de acceso"
         )
 
         st.plotly_chart(fig_oa, use_container_width=True)
+
+
+# ------------------------------------------------------------------------------
+# 📄 TIPOS DE DOCUMENTO (MEJORADO Y ESTABLE)
+# ------------------------------------------------------------------------------
 
 with col_doc:
     with st.container(border=True):
 
         st.subheader("📄 Tipología de la Producción Científica")
-
-        st.caption(
-            "Tipos de documentos predominantes dentro de la literatura analizada."
-        )
+        st.caption("Tipos de documentos más frecuentes en la literatura.")
 
         doc = (
             df_filtered["Document Type"]
+            .fillna("Desconocido")
             .value_counts()
             .head(8)
             .reset_index()
         )
 
-        doc.columns = [
-            "Tipo",
-            "Cantidad"
-        ]
+        doc.columns = ["Tipo", "Cantidad"]
 
-        fig_doc = px.funnel(
+        # 🔥 asegurar tipo numérico (evita errores silenciosos)
+        doc["Cantidad"] = pd.to_numeric(doc["Cantidad"], errors="coerce")
+        doc = doc.dropna()
+
+        fig_doc = px.bar(
             doc,
             x="Cantidad",
             y="Tipo",
+            orientation="h",
             template="plotly_dark",
             color="Cantidad",
             color_continuous_scale="Teal"
@@ -441,47 +443,9 @@ with col_doc:
         fig_doc.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            height=430,
+            height=420,
+            margin=dict(t=20, b=20, l=10, r=10),
             coloraxis_showscale=False
         )
 
         st.plotly_chart(fig_doc, use_container_width=True)
-
-
-# ==============================================================================
-# FILA 5: BASE DOCUMENTAL
-# ==============================================================================
-
-with st.container(border=True):
-
-    st.subheader("📂 Repositorio de Evidencia Científica")
-
-    st.caption(
-        "Base documental utilizada para el análisis bibliométrico."
-    )
-
-    display_cols = [
-        "Authors",
-        "Title",
-        "Year",
-        "Source title",
-        "Document Type",
-        "Cited by"
-    ]
-
-    st.dataframe(
-        df_filtered[display_cols],
-        use_container_width=True,
-        height=450
-    )
-
-    csv_data = df_filtered.to_csv(
-        index=False
-    ).encode("utf-8")
-
-    st.download_button(
-        label="📥 Exportar Datos Filtrados",
-        data=csv_data,
-        file_name="scopus_salud_materno_infantil.csv",
-        mime="text/csv"
-    )
