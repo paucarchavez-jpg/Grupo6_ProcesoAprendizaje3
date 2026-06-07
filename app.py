@@ -178,9 +178,7 @@ st.write("")
 st.caption(
     "Indicadores generales de producción científica, impacto académico y disponibilidad de acceso en la literatura analizada."
 )
-# ==============================================================================
 # FILA 2: EVOLUCIÓN Y LÍNEAS DE INVESTIGACIÓN
-# ==============================================================================
 
 col_left, col_right = st.columns([6,4])
 
@@ -270,9 +268,7 @@ with col_right:
         st.plotly_chart(fig_words, use_container_width=True)
 
 
-# ==============================================================================
 # FILA 3: REVISTAS Y ARTÍCULOS MÁS CITADOS
-# ==============================================================================
 
 col_journal, col_cited = st.columns(2)
 
@@ -362,15 +358,8 @@ with col_cited:
 
         st.plotly_chart(fig_bar, use_container_width=True)
 
-c# ==============================================================================
-# FILA 4: ACCESO ABIERTO Y TIPOS DE DOCUMENTO (OPTIMIZADO)
-# ==============================================================================
-
 col_oa, col_doc = st.columns(2)
 
-# ------------------------------------------------------------------------------
-# 🔓 ACCESO ABIERTO
-# ------------------------------------------------------------------------------
 
 with col_oa:
     with st.container(border=True):
@@ -405,10 +394,6 @@ with col_oa:
 
         st.plotly_chart(fig_oa, use_container_width=True)
 
-
-# ------------------------------------------------------------------------------
-# 📄 TIPOS DE DOCUMENTO (MEJORADO Y ESTABLE)
-# ------------------------------------------------------------------------------
 
 with col_doc:
     with st.container(border=True):
