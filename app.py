@@ -492,10 +492,10 @@ with col_bottom_right:
         csv_data = df_filtered.to_csv(index=False).encode('utf-8')
 
         st.download_button(
-            label="📥 Exportar Vista Actual a CSV",
-            data=csv_data,
-            file_name="scopus_salud_materno_infantil.csv",
-            mime="text/csv",
-            help="Descarga los datos filtrados para Excel o Python."
-        )
-        )
+    label="📥 Exportar Vista Actual a CSV",
+    data=csv_data,
+    file_name="scopus_salud_materno_infantil.csv",
+    mime="text/csv",
+    help="Descarga los datos filtrados para Excel o Python."
+)
+        
