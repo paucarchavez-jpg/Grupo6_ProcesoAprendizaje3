@@ -471,31 +471,29 @@ with col_doc:
 # ==============================================================================
 # 📂 REPOSITORIO + DESCARGA CSV (SIN ERRORES)
 # ==============================================================================
+with st.container(border=True):
 
-with col_bottom_right:
-    with st.container(border=True):
+    st.subheader("📂 Repositorio de Evidencia")
+    st.caption("Detalle de los documentos según los filtros aplicados. Puede exportar estos datos.")
 
-        st.subheader("📂 Repositorio de Evidencia")
-        st.caption("Detalle de los documentos según los filtros aplicados. Puede exportar estos datos.")
+    # columnas seguras (evita crash si falta alguna)
+    base_cols = ['Authors', 'Title', 'Year', 'Source title', 'Cited by']
+    safe_cols = [c for c in base_cols if c in df_filtered.columns]
 
-        # columnas seguras (evita crash si falta alguna)
-        base_cols = ['Authors', 'Title', 'Year', 'Source title', 'Cited by']
-        safe_cols = [c for c in base_cols if c in df_filtered.columns]
+    st.dataframe(
+        df_filtered[safe_cols],
+        use_container_width=True,
+        height=330
+    )
 
-        st.dataframe(
-            df_filtered[safe_cols],
-            use_container_width=True,
-            height=330
-        )
+    # export CSV
+    csv_data = df_filtered.to_csv(index=False).encode('utf-8')
 
-        # export CSV
-        csv_data = df_filtered.to_csv(index=False).encode('utf-8')
-
-        st.download_button(
-    label="📥 Exportar Vista Actual a CSV",
-    data=csv_data,
-    file_name="scopus_salud_materno_infantil.csv",
-    mime="text/csv",
-    help="Descarga los datos filtrados para Excel o Python."
-)
+    st.download_button(
+        label="📥 Exportar Vista Actual a CSV",
+        data=csv_data,
+        file_name="scopus_salud_materno_infantil.csv",
+        mime="text/csv",
+        help="Descarga los datos filtrados para Excel o Python."
+    )
         
