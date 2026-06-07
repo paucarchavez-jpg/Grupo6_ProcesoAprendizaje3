@@ -411,18 +411,33 @@ with col_doc:
 
         doc.columns = ["Tipo", "Cantidad"]
 
-        # 🔥 asegurar tipo numérico (evita errores silenciosos)
         doc["Cantidad"] = pd.to_numeric(doc["Cantidad"], errors="coerce")
         doc = doc.dropna()
 
-        fig_doc = px.bar(
+        # 🎨 Paleta más viva (colores intensos y contrastados)
+        vibrant_colors = [
+            "#00D4FF",  # celeste neón
+            "#FF3D81",  # rosa fuerte
+            "#7C4DFF",  # morado vibrante
+            "#00E676",  # verde neón
+            "#FFEA00",  # amarillo intenso
+            "#FF6D00",  # naranja fuerte
+            "#D500F9",  # fucsia
+            "#00BFA5"   # verde azulado
+        ]
+
+        fig_doc = px.pie(
             doc,
-            x="Cantidad",
-            y="Tipo",
-            orientation="h",
+            names="Tipo",
+            values="Cantidad",
+            hole=0.6,
             template="plotly_dark",
-            color="Cantidad",
-            color_continuous_scale="Teal"
+            color_discrete_sequence=vibrant_colors
+        )
+
+        fig_doc.update_traces(
+            textinfo="percent+label",
+            pull=[0.02]*len(doc)  # separa ligeramente cada segmento (efecto pro)
         )
 
         fig_doc.update_layout(
@@ -430,7 +445,24 @@ with col_doc:
             plot_bgcolor="rgba(0,0,0,0)",
             height=420,
             margin=dict(t=20, b=20, l=10, r=10),
-            coloraxis_showscale=False
+            legend_title_text="Tipo de documento"
         )
 
         st.plotly_chart(fig_doc, use_container_width=True)
+        st.plotly_chart(fig_doc, use_container_width=True)
+        
+with col_bottom_right:
+    with st.container(border=True):
+        st.subheader("📂 Repositorio de Evidencia")
+        st.caption("Detalle de los documentos según los filtros aplicados. Puede exportar estos datos.")
+        display_cols = ['Authors', 'Title', 'Year', 'Source title', 'Cited by']
+        st.dataframe(df_filtered[display_cols], use_container_width=True, height=330)
+        
+        csv_data = df_filtered.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Exportar Vista Actual a CSV",
+            data=csv_data,
+            file_name="scopus_salud_materno_infantil.csv",
+            mime="text/csv",
+            help="Descarga los datos filtrados para un análisis externo en Excel o Python."
+        )
