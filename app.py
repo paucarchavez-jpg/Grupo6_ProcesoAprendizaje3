@@ -360,6 +360,9 @@ with col_cited:
 
 col_oa, col_doc = st.columns(2)
 
+# ==============================================================================
+# 🔓 ACCESO ABIERTO (DONA MEJORADA)
+# ==============================================================================
 
 with col_oa:
     with st.container(border=True):
@@ -382,11 +385,22 @@ with col_oa:
             values="Cantidad",
             hole=0.6,
             template="plotly_dark",
-            color_discrete_sequence=["#8ea19b", "#d1ab71", "#5b8c85", "#c9c9c9"]
+            color_discrete_sequence=[
+                "#00D4FF",  # celeste neón
+                "#FF3D81",  # rosa fuerte
+                "#7C4DFF",  # morado
+                "#00E676"   # verde neón
+            ]
+        )
+
+        fig_oa.update_traces(
+            textinfo="percent+label",
+            pull=[0.02] * len(oa)
         )
 
         fig_oa.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
             height=420,
             margin=dict(t=20, b=20, l=10, r=10),
             legend_title_text="Tipo de acceso"
@@ -394,6 +408,10 @@ with col_oa:
 
         st.plotly_chart(fig_oa, use_container_width=True)
 
+
+# ==============================================================================
+# 📄 TIPOS DE DOCUMENTO (DONUT VIVO)
+# ==============================================================================
 
 with col_doc:
     with st.container(border=True):
@@ -414,16 +432,15 @@ with col_doc:
         doc["Cantidad"] = pd.to_numeric(doc["Cantidad"], errors="coerce")
         doc = doc.dropna()
 
-        # 🎨 Paleta más viva (colores intensos y contrastados)
         vibrant_colors = [
-            "#00D4FF",  # celeste neón
-            "#FF3D81",  # rosa fuerte
-            "#7C4DFF",  # morado vibrante
-            "#00E676",  # verde neón
-            "#FFEA00",  # amarillo intenso
-            "#FF6D00",  # naranja fuerte
-            "#D500F9",  # fucsia
-            "#00BFA5"   # verde azulado
+            "#00D4FF",
+            "#FF3D81",
+            "#7C4DFF",
+            "#00E676",
+            "#FFEA00",
+            "#FF6D00",
+            "#D500F9",
+            "#00BFA5"
         ]
 
         fig_doc = px.pie(
@@ -437,7 +454,7 @@ with col_doc:
 
         fig_doc.update_traces(
             textinfo="percent+label",
-            pull=[0.02]*len(doc)  # separa ligeramente cada segmento (efecto pro)
+            pull=[0.02] * len(doc)
         )
 
         fig_doc.update_layout(
@@ -449,20 +466,36 @@ with col_doc:
         )
 
         st.plotly_chart(fig_doc, use_container_width=True)
-        st.plotly_chart(fig_doc, use_container_width=True)
-        
+
+
+# ==============================================================================
+# 📂 REPOSITORIO + DESCARGA CSV (SIN ERRORES)
+# ==============================================================================
+
 with col_bottom_right:
     with st.container(border=True):
+
         st.subheader("📂 Repositorio de Evidencia")
         st.caption("Detalle de los documentos según los filtros aplicados. Puede exportar estos datos.")
-        display_cols = ['Authors', 'Title', 'Year', 'Source title', 'Cited by']
-        st.dataframe(df_filtered[display_cols], use_container_width=True, height=330)
-        
+
+        # columnas seguras (evita crash si falta alguna)
+        base_cols = ['Authors', 'Title', 'Year', 'Source title', 'Cited by']
+        safe_cols = [c for c in base_cols if c in df_filtered.columns]
+
+        st.dataframe(
+            df_filtered[safe_cols],
+            use_container_width=True,
+            height=330
+        )
+
+        # export CSV
         csv_data = df_filtered.to_csv(index=False).encode('utf-8')
+
         st.download_button(
             label="📥 Exportar Vista Actual a CSV",
             data=csv_data,
             file_name="scopus_salud_materno_infantil.csv",
             mime="text/csv",
-            help="Descarga los datos filtrados para un análisis externo en Excel o Python."
+            help="Descarga los datos filtrados para Excel o Python."
+        )
         )
