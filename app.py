@@ -130,80 +130,358 @@ if df_filtered.empty:
     st.stop()
 
 # --- FILA 1: KPIs (Micro-tarjetas Bento) ---
+
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+
 with kpi1:
     with st.container(border=True):
-        st.markdown(f"<div class='kpi-title'>Producción Científica</div><div class='kpi-value'>{len(df_filtered)}</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class='kpi-title'>📚 Publicaciones Analizadas</div>
+            <div class='kpi-value'>{len(df_filtered)}</div>
+            """,
+            unsafe_allow_html=True
+        )
+
 with kpi2:
     with st.container(border=True):
-        st.markdown(f"<div class='kpi-title'>Impacto Académico</div><div class='kpi-value'>{df_filtered['Cited by'].sum()}</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class='kpi-title'>🎯 Citaciones Totales</div>
+            <div class='kpi-value'>{df_filtered['Cited by'].sum()}</div>
+            """,
+            unsafe_allow_html=True
+        )
+
 with kpi3:
     with st.container(border=True):
         avg_cit = df_filtered['Cited by'].mean()
-        st.markdown(f"<div class='kpi-title'>Promedio de Citaciones</div><div class='kpi-value'>{avg_cit:.1f}</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class='kpi-title'>📈 Promedio de Citaciones por Artículo</div>
+            <div class='kpi-value'>{avg_cit:.1f}</div>
+            """,
+            unsafe_allow_html=True
+        )
 with kpi4:
     with st.container(border=True):
         oa_pct = (df_filtered['Access_Type'] == 'Open Access').sum() / len(df_filtered) * 100
-        st.markdown(f"<div class='kpi-title'>Acceso Abierto</div><div class='kpi-value kpi-highlight'>{oa_pct:.1f}%</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class='kpi-title'>🌐 Acceso Abierto</div>
+            <div class='kpi-value kpi-highlight'>{oa_pct:.1f}%</div>
+            """,
+            unsafe_allow_html=True
+        )
+st.write("")
 
-st.write("") # Espaciador
+st.caption(
+    "Indicadores generales de producción científica, impacto académico y disponibilidad de acceso en la literatura analizada."
+)
+# ==============================================================================
+# FILA 2: EVOLUCIÓN Y LÍNEAS DE INVESTIGACIÓN
+# ==============================================================================
 
-# --- FILA 2: BENTO GRID PRINCIPAL (Gráficos asimétricos) ---
-# Usamos proporciones 60% / 40% para romper la simetría y darle aspecto de dashboard moderno
-col_left, col_right = st.columns([6, 4])
+col_left, col_right = st.columns([6,4])
 
 with col_left:
     with st.container(border=True):
+
         st.subheader("📈 Evolución de las Publicaciones Científicas")
-        st.caption("Visualiza cómo ha crecido el interés en la aplicación de IA en este campo a lo largo de los años.")
-        df_yearly = df_filtered.groupby('Year').size().reset_index(name='Documentos')
-        fig_line = px.line(df_yearly, x='Year', y='Documentos', markers=True, template='plotly_dark', color_discrete_sequence=['#06b6d4'])
-        fig_line.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=0, r=0, t=30, b=0), height=350)
+
+        st.caption(
+            "Crecimiento de la producción científica sobre inteligencia artificial y aprendizaje automático en salud materna e infantil."
+        )
+
+        df_yearly = (
+            df_filtered
+            .groupby("Year")
+            .size()
+            .reset_index(name="Documentos")
+        )
+
+        fig_line = px.line(
+            df_yearly,
+            x="Year",
+            y="Documentos",
+            markers=True,
+            template="plotly_dark",
+            color_discrete_sequence=["#06b6d4"]
+        )
+
+        fig_line.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            height=380
+        )
+
         st.plotly_chart(fig_line, use_container_width=True)
 
 with col_right:
     with st.container(border=True):
+
         st.subheader("🔍 Principales Líneas de Investigación")
-        st.caption("Conceptos y temáticas más frecuentes en los artículos analizados.")
-        
-        all_titles = " ".join(df_filtered['Title'].str.lower().tolist())
-        words = re.findall(r'\b[a-z]{4,}\b', all_titles)
-        stop_words = {'with', 'from', 'using', 'study', 'analysis', 'based', 'health', 'maternal', 'child', 'pregnant', 'women', 'model', 'learning', 'machine', 'artificial', 'intelligence'}
-        filtered_words = [w for w in words if w not in stop_words]
-        
+
+        st.caption(
+            "Temáticas más frecuentes identificadas en los títulos de las publicaciones."
+        )
+
+        all_titles = " ".join(
+            df_filtered["Title"].str.lower().tolist()
+        )
+
+        words = re.findall(r"\b[a-z]{4,}\b", all_titles)
+
+        stop_words = {
+            "with","from","using","study","analysis",
+            "based","health","maternal","child",
+            "pregnant","women","model","learning",
+            "machine","artificial","intelligence"
+        }
+
+        filtered_words = [
+            w for w in words
+            if w not in stop_words
+        ]
+
         word_counts = Counter(filtered_words).most_common(10)
-        df_words = pd.DataFrame(word_counts, columns=['Término', 'Frecuencia'])
-        
-        fig_words = px.bar(df_words, x='Frecuencia', y='Término', orientation='h', template='plotly_dark', color_discrete_sequence=['#8b5cf6'])
-        fig_words.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', yaxis={'categoryorder': 'total ascending'}, margin=dict(l=0, r=0, t=30, b=0), height=350)
+
+        df_words = pd.DataFrame(
+            word_counts,
+            columns=["Término","Frecuencia"]
+        )
+
+        fig_words = px.bar(
+            df_words,
+            x="Frecuencia",
+            y="Término",
+            orientation="h",
+            template="plotly_dark",
+            color_discrete_sequence=["#8b5cf6"]
+        )
+
+        fig_words.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            height=380,
+            yaxis={"categoryorder":"total ascending"}
+        )
+
         st.plotly_chart(fig_words, use_container_width=True)
 
-# --- FILA 3: BENTO GRID SECUNDARIO (Impacto y Datos crudos) ---
-col_bottom_left, col_bottom_right = st.columns([5, 5])
 
-with col_bottom_left:
+# ==============================================================================
+# FILA 3: REVISTAS Y ARTÍCULOS MÁS CITADOS
+# ==============================================================================
+
+col_journal, col_cited = st.columns(2)
+
+with col_journal:
     with st.container(border=True):
+
+        st.subheader("📚 Revistas con Mayor Producción Científica")
+
+        st.caption(
+            "Fuentes que concentran la mayor cantidad de investigaciones del área."
+        )
+
+        top_journals = (
+            df_filtered["Source title"]
+            .value_counts()
+            .head(10)
+            .reset_index()
+        )
+
+        top_journals.columns = [
+            "Revista",
+            "Publicaciones"
+        ]
+
+        fig_journal = px.bar(
+            top_journals,
+            x="Publicaciones",
+            y="Revista",
+            orientation="h",
+            template="plotly_dark",
+            color="Publicaciones",
+            color_continuous_scale="Teal"
+        )
+
+        fig_journal.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            height=430,
+            coloraxis_showscale=False,
+            yaxis={"categoryorder":"total ascending"}
+        )
+
+        st.plotly_chart(fig_journal, use_container_width=True)
+
+with col_cited:
+    with st.container(border=True):
+
         st.subheader("🏆 Artículos con Mayor Impacto Científico")
-        st.caption("Publicaciones que han recibido más citaciones y han influido significativamente en el desarrollo del área.")
-        df_top = df_filtered.nlargest(10, 'Cited by').copy()
-        df_top['Título Corto'] = df_top['Title'].apply(lambda x: x[:50] + "..." if len(x) > 50 else x)
-        
-        fig_bar = px.bar(df_top, x='Cited by', y='Título Corto', orientation='h', template='plotly_dark', color='Cited by', color_continuous_scale='Teal')
-        fig_bar.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', yaxis={'categoryorder': 'total ascending'}, margin=dict(l=0, r=0, t=30, b=0), height=400, coloraxis_showscale=False)
+
+        st.caption(
+            "Publicaciones que han recibido más citaciones dentro del conjunto analizado."
+        )
+
+        df_top = (
+            df_filtered
+            .nlargest(10, "Cited by")
+            .copy()
+        )
+
+        df_top["Título Corto"] = (
+            df_top["Title"]
+            .apply(
+                lambda x:
+                x[:50] + "..."
+                if len(x) > 50
+                else x
+            )
+        )
+
+        fig_bar = px.bar(
+            df_top,
+            x="Cited by",
+            y="Título Corto",
+            orientation="h",
+            template="plotly_dark",
+            color="Cited by",
+            color_continuous_scale="Teal"
+        )
+
+        fig_bar.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            height=430,
+            coloraxis_showscale=False,
+            yaxis={"categoryorder":"total ascending"}
+        )
+
         st.plotly_chart(fig_bar, use_container_width=True)
 
-with col_bottom_right:
+
+# ==============================================================================
+# FILA 4: ACCESO ABIERTO Y TIPOS DE DOCUMENTO
+# ==============================================================================
+
+col_oa, col_doc = st.columns(2)
+
+with col_oa:
     with st.container(border=True):
-        st.subheader("📂 Publicaciones Analizadas")
-        st.caption("Listado de publicaciones científicas consideradas en el análisis bibliométrico.")
-        display_cols = ['Authors', 'Title', 'Year', 'Source title', 'Cited by']
-        st.dataframe(df_filtered[display_cols], use_container_width=True, height=330)
-        
-        csv_data = df_filtered.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="📥 Exportar Vista Actual a CSV",
-            data=csv_data,
-            file_name="scopus_salud_materno_infantil.csv",
-            mime="text/csv",
-            help="Descarga los datos filtrados para un análisis externo en Excel o Python."
+
+        st.subheader("🔓 Disponibilidad del Conocimiento")
+
+        st.caption(
+            "Distribución de publicaciones según acceso abierto."
         )
+
+        oa = (
+            df_filtered["Access_Type"]
+            .value_counts()
+            .reset_index()
+        )
+
+        oa.columns = [
+            "Tipo",
+            "Cantidad"
+        ]
+
+        fig_oa = px.pie(
+            oa,
+            names="Tipo",
+            values="Cantidad",
+            hole=0.60,
+            template="plotly_dark",
+            color_discrete_sequence=[
+                "#8ea19b",
+                "#d1ab71"
+            ]
+        )
+
+        fig_oa.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            height=430
+        )
+
+        st.plotly_chart(fig_oa, use_container_width=True)
+
+with col_doc:
+    with st.container(border=True):
+
+        st.subheader("📄 Tipología de la Producción Científica")
+
+        st.caption(
+            "Tipos de documentos predominantes dentro de la literatura analizada."
+        )
+
+        doc = (
+            df_filtered["Document Type"]
+            .value_counts()
+            .head(8)
+            .reset_index()
+        )
+
+        doc.columns = [
+            "Tipo",
+            "Cantidad"
+        ]
+
+        fig_doc = px.funnel(
+            doc,
+            x="Cantidad",
+            y="Tipo",
+            template="plotly_dark",
+            color="Cantidad",
+            color_continuous_scale="Teal"
+        )
+
+        fig_doc.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            height=430,
+            coloraxis_showscale=False
+        )
+
+        st.plotly_chart(fig_doc, use_container_width=True)
+
+
+# ==============================================================================
+# FILA 5: BASE DOCUMENTAL
+# ==============================================================================
+
+with st.container(border=True):
+
+    st.subheader("📂 Repositorio de Evidencia Científica")
+
+    st.caption(
+        "Base documental utilizada para el análisis bibliométrico."
+    )
+
+    display_cols = [
+        "Authors",
+        "Title",
+        "Year",
+        "Source title",
+        "Document Type",
+        "Cited by"
+    ]
+
+    st.dataframe(
+        df_filtered[display_cols],
+        use_container_width=True,
+        height=450
+    )
+
+    csv_data = df_filtered.to_csv(
+        index=False
+    ).encode("utf-8")
+
+    st.download_button(
+        label="📥 Exportar Datos Filtrados",
+        data=csv_data,
+        file_name="scopus_salud_materno_infantil.csv",
+        mime="text/csv"
+    )
